@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  python:
+    container_name: python
+    build: ./docker/python
+    ports:
+    - 8888:8888
+    volumes:
+    - ./src:/root/src
+    stdin_open: true
