@@ -1,3 +1,4 @@
-FROM tensorflow/tensorflow:latest-py3
+FROM tensorflow/tensorflow:latest-py3-jupyter
 
-RUN pip install -q keras
+RUN pip install -U tensorboard tensorflow tensorflow-estimator \
+  && pip install -q keras
