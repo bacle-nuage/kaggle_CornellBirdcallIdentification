@@ -15,12 +15,12 @@ import numpy as np
 ##############################
 # 定数
 ##############################
-COLAB_FLG = 1
-TRAIN_PATH = '/kaggle/input/titanic/train.csv'
-TEST_PATH = '/kaggle/input/titanic/test.csv'
-COLAB_TRAIN_PATH = '/content/drive/My Drive/MachineLeaning/kaggle_titanic/train.csv'
-COLAB_TEST_PATH = '/content/drive/My Drive/MachineLeaning/kaggle_titanic/test.csv'
-COLUMNS = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Ticket_Left']
+# COLAB_FLG = 1
+# TRAIN_PATH = '/kaggle/input/titanic/train.csv'
+# TEST_PATH = '/kaggle/input/titanic/test.csv'
+# COLAB_TRAIN_PATH = '/content/drive/My Drive/MachineLeaning/kaggle_titanic/train.csv'
+# COLAB_TEST_PATH = '/content/drive/My Drive/MachineLeaning/kaggle_titanic/test.csv'
+# COLUMNS = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Ticket_Left']
 
 ##############################
 # 関数
@@ -167,74 +167,78 @@ model.fit(train_x, train_y, epochs=nb_epoch, batch_size=batch_size)
 Y = model.predict_classes(test_x, batch_size=batch_size)
 
 # 結果検証
+_, T_index = np.where(test_t > 0) # to_categorical の逆変換
+print()
+print('RESULT')
+print(Y == T_index)
 
-# 点数算出
-train_loss, train_acc = model.evaluate(x_train, y_train)
-print('train_acc : ', train_acc)
+# # 点数算出
+# train_loss, train_acc = model.evaluate(x_train, y_train)
+# print('train_acc : ', train_acc)
+#
+# # テストデータを入力
+# Y_pred = model.predict(test_data)
+#
+# import csv
+# with open("predict_result_data.csv", "w") as f:
+#     writer = csv.writer(f, lineterminator='\n')
+#     writer.writerow(["PassengerId", "Survived"])
+#     for pid, survived in zip(test['PassengerId'].astype(int), Y_pred[:, 0].astype(int)):
+#         writer.writerow([pid, survived])
 
-# テストデータを入力
-Y_pred = model.predict(test_data)
 
-import csv
-with open("predict_result_data.csv", "w") as f:
-    writer = csv.writer(f, lineterminator='\n')
-    writer.writerow(["PassengerId", "Survived"])
-    for pid, survived in zip(test['PassengerId'].astype(int), Y_pred[:, 0].astype(int)):
-        writer.writerow([pid, survived])
-
-
-##############################
-# ハイパーパラメータ探求
-##############################
-# データ読み込み
-train, test = read_data()
-
-# 前処理
-train, test = pre_processing(train, test)
-
-# 使用するカラム
-columns = COLUMNS
-train_data = train[columns].values
-train_lavels = train['Survived'].values
-
-# 型を変換
-x_train = np.asarray(train_data).astype('float32')
-y_train = np.asarray(train_lavels).astype('float32')
-test_data = test[columns].values.astype('float32')
-
-#正規化
-for i in range(len(columns)-1):
-    mean = x_train.mean(axis=0)[i]
-    std = x_train.std(axis=0)[i]
-
-    x_train[:, i] = (x_train[:, i] - mean) / std
-    test_data[:, i] = (test_data[:, i] - mean) / std
-
-##############################
-# GridSearch
-##############################
-from keras.wrappers.scikit_learn import KerasClassifier
-# model = KerasClassifier(build_fn=create_model_5dim_layer(columns), verbose=0)
-model = KerasClassifier(build_fn=create_model_5dim_layer, verbose=0)
-from sklearn.model_selection import GridSearchCV
-# Define options for parameters
-activation = ["tanh", "relu"]
-optimizer = ["adam", "adagrad"]
-out_dim = [234, 468, 702]
-nb_epoch = [25, 50]
-batch_size = [8, 16]
-dropout = [0.2, 0.4, 0.5]
-
-param_grid = dict(activation=activation,
-                  optimizer=optimizer,
-                  out_dim=out_dim,
-                  nb_epoch=nb_epoch,
-                  batch_size=batch_size,
-                  dropout=dropout)
-grid = GridSearchCV(estimator=model, param_grid=param_grid)
-
-# Run grid search
-grid_result = grid.fit(x_train, y_train)
-
-print(grid_result.best_score_)
-print(grid_result.best_params_)
+# ##############################
+# # ハイパーパラメータ探求
+# ##############################
+# # データ読み込み
+# train, test = read_data()
+#
+# # 前処理
+# train, test = pre_processing(train, test)
+#
+# # 使用するカラム
+# columns = COLUMNS
+# train_data = train[columns].values
+# train_lavels = train['Survived'].values
+#
+# # 型を変換
+# x_train = np.asarray(train_data).astype('float32')
+# y_train = np.asarray(train_lavels).astype('float32')
+# test_data = test[columns].values.astype('float32')
+#
+# #正規化
+# for i in range(len(columns)-1):
+#     mean = x_train.mean(axis=0)[i]
+#     std = x_train.std(axis=0)[i]
+#
+#     x_train[:, i] = (x_train[:, i] - mean) / std
+#     test_data[:, i] = (test_data[:, i] - mean) / std
+#
+# ##############################
+# # GridSearch
+# ##############################
+# from keras.wrappers.scikit_learn import KerasClassifier
+# # model = KerasClassifier(build_fn=create_model_5dim_layer(columns), verbose=0)
+# model = KerasClassifier(build_fn=create_model_5dim_layer, verbose=0)
+# from sklearn.model_selection import GridSearchCV
+# # Define options for parameters
+# activation = ["tanh", "relu"]
+# optimizer = ["adam", "adagrad"]
+# out_dim = [234, 468, 702]
+# nb_epoch = [25, 50]
+# batch_size = [8, 16]
+# dropout = [0.2, 0.4, 0.5]
+#
+# param_grid = dict(activation=activation,
+#                   optimizer=optimizer,
+#                   out_dim=out_dim,
+#                   nb_epoch=nb_epoch,
+#                   batch_size=batch_size,
+#                   dropout=dropout)
+# grid = GridSearchCV(estimator=model, param_grid=param_grid)
+#
+# # Run grid search
+# grid_result = grid.fit(x_train, y_train)
+#
+# print(grid_result.best_score_)
+# print(grid_result.best_params_)
